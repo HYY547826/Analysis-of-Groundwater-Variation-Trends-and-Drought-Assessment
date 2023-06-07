@@ -1,0 +1,49 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import silhouette_score
+from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
+import warnings
+
+
+data = pd.read_excel(r'E:\360MoveData\Users\hyy\Desktop\地下水预测\数据\地下水数据KNN.xlsx', index_col=0).T
+
+
+scaler = StandardScaler()
+data_std = scaler.fit_transform(data)
+
+
+Z = linkage(data_std, method='ward', metric='euclidean')
+
+
+plt.figure(figsize=(16, 10))
+plt.subplots_adjust(left=0.06, right=0.98, bottom=0.06, top=0.97)
+
+warnings.filterwarnings("ignore")
+plt.rcParams['font.sans-serif'] = ['Times New Roman']  # 显示中文宋体
+plt.rcParams['axes.unicode_minus'] = False  # 显示负号
+
+# dendrogram(Z, orientation='left', distance_sort='ascending', link_color_func=None)
+dendrogram(Z, orientation='left')
+
+
+plt.tick_params(axis='both', labelsize=12)
+
+
+plt.title('Dendrogram', size=16)
+plt.xlabel('Samples', size=16)
+
+plt.ylabel('Distance', size=16)
+
+plt.show()
+
+
+k = 3 
+cluster_labels = fcluster(Z, k, criterion='maxclust')
+silhouette_avg = silhouette_score(data_std, cluster_labels)
+print(f'Silhouette Coefficient for {k} clusters: {silhouette_avg:.3f}')
+
+
+data['cluster_labels'] = cluster_labels
+data.to_excel(r"E:\360MoveData\Users\hyy\Desktop\地下水预测\数据\层次聚类result.xlsx")
