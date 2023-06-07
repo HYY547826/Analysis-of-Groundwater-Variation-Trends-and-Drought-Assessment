@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+
+df = pd.read_excel(r'E:\360MoveData\Users\hyy\Desktop\地下水预测\数据\地下水数据最小二乘.xlsx')
+
+
+X = df.iloc[:, 1:].values
+print(X)
+
+X_diff = np.diff(X, axis=1)
+
+X_diff = X
+
+n_samples, n_features = X_diff.shape
+X_diff = np.hstack((X_diff, np.ones((n_samples, 1))))
+for i in range(n_features):
+    X_diff[:, i] = X_diff[:, i] - X_diff[:, i].mean()
+
+y = df.iloc[:, 0].values[:].reshape(-1, 1)
+
+
+model = LinearRegression(fit_intercept=False)
+model.fit(X_diff, y)
+
+
+coefficients = model.coef_
+print('Coefficients:', coefficients)
+
+
+df_coefficients = pd.DataFrame(coefficients.T, columns=['Coefficient'])
+df_coefficients.to_excel(r'E:\360MoveData\Users\hyy\Desktop\地下水预测\数据\coefficients.xlsx', index=False)
