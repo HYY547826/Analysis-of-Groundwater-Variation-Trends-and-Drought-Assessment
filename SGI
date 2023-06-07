@@ -1,0 +1,16 @@
+import pandas as pd
+import numpy as np
+from scipy import stats
+
+
+data = pd.read_excel(r'E:\360MoveData\Users\hyy\Desktop\地下水预测\数据\地下水数据.xlsx', index_col=0, sheet_name='地下水数据')
+
+mean = data.mean(axis=1)
+std = data.std(axis=1, ddof=1)
+
+
+SGI = (data - mean[:, np.newaxis]) / std[:, np.newaxis]
+
+writer = pd.ExcelWriter(r'E:\360MoveData\Users\hyy\Desktop\地下水预测\数据\SGI.xlsx')
+SGI.to_excel(writer, 'SGI')
+writer.save()
